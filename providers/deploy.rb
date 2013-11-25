@@ -309,12 +309,17 @@ private
       Chef::Log.warn "artifact_deploy[has_manifest_changed?] Cannot load manifest.yaml. It may have been deleted. Deploying."
       return true
     end
-  
+
     current_manifest = generate_manifest(release_path)
     Chef::Log.info "artifact_deploy[has_manifest_changed?] Comparing saved manifest from #{release_path} with regenerated manifest from #{release_path}."
-    
-    differences = !saved_manifest.diff(current_manifest).empty?
-    if differences
+
+    differences, has_differences = saved_manifest.diff(current_manifest), !differences.empty?
+
+    differences.each do |path, checksum|
+      Chef::Log.debug "file at #{path} is different"
+    end
+
+    if has_differences
       Chef::Log.info "artifact_deploy[has_manifest_changed?] Saved manifest from #{release_path} differs from regenerated manifest. Deploying."
       return true
     else
