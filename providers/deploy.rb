@@ -313,13 +313,13 @@ private
     current_manifest = generate_manifest(release_path)
     Chef::Log.info "artifact_deploy[has_manifest_changed?] Comparing saved manifest from #{release_path} with regenerated manifest from #{release_path}."
 
-    differences, has_differences = saved_manifest.diff(current_manifest), !differences.empty?
+    differences = saved_manifest.diff(current_manifest)
 
     differences.each do |path, checksum|
-      Chef::Log.debug "file at #{path} is different"
+      Chef::Log.debug "artifact_deploy[has_manifest_changed?] File at #{path} is different"
     end
 
-    if has_differences
+    if differences.any?
       Chef::Log.info "artifact_deploy[has_manifest_changed?] Saved manifest from #{release_path} differs from regenerated manifest. Deploying."
       return true
     else
